@@ -38,10 +38,10 @@ class GraphicsCore
         GraphicsCore();
         void init_graphics();
         void init_graphics(int WIDTH, int HEIGHT);
-        void drawSimpleLine(point start, point stop, bool flagColoredStart, GraphicsCore_Color FColor, GraphicsCore_Color BColor);
+        void drawOrthogonalLine(point start, point stop, bool flagColoredStart, GraphicsCore_Color FColor, GraphicsCore_Color BColor);
         void drawOneSymb(point pos, char symb, GraphicsCore_Color FColor, GraphicsCore_Color BColor);
-        void drawSimpleRectangle(point lt, point rb, GraphicsCore_Color FColor, GraphicsCore_Color BColor);
-        void switchBuffer();
+        void drawOrthogonalRectangle(point lt, point rb, GraphicsCore_Color FColor, GraphicsCore_Color BColor);
+        void ShowBuffer();
         void drawCentreText(std::string text, point center, GraphicsCore_Color FColor, GraphicsCore_Color BColor);
         void drawLeftText(std::string text, point left, GraphicsCore_Color FColor, GraphicsCore_Color BColor);
         void drawFill(point lt, point rb, GraphicsCore_Color BColor);

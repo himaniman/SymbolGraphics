@@ -77,10 +77,13 @@ void GraphicsCore::init_graphics(int width, int height){
                           0L, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0L);
 }
 
-void GraphicsCore::drawSimpleLine(point start, point stop, bool flagColoredStart, GraphicsCore_Color FColor, GraphicsCore_Color BColor)//функция рисующая линию(начало,конец, флаг использоваия,цвет)
+void GraphicsCore::drawOrthogonalLine(point start, point stop, bool flagColoredStart, GraphicsCore_Color FColor, GraphicsCore_Color BColor)//функция рисующая линию(начало,конец, флаг использоваия,цвет)
 {
-    if (!flagColoredStart)//закрашивает начало и коенц
+    short smallLine=0; //1 - x small, 2 - y small
+    if (!flagColoredStart && (start.x == stop.x || start.y == stop.y))//закрашивает начало и коенц
     {
+        if (abs(start.x-stop.x) == 2) smallLine = 1;
+        if (abs(start.y-stop.y) == 2) smallLine = 2;
         if (start.x != stop.x)
             start.x-=(start.x-stop.x)/abs(start.x-stop.x);
         if (start.x != stop.x)
@@ -90,7 +93,7 @@ void GraphicsCore::drawSimpleLine(point start, point stop, bool flagColoredStart
         if (start.y != stop.y)
             stop.y+=(start.y-stop.y)/abs(start.y-stop.y);
     }
-    if (start.x == stop.x)//для оформления начала или конца линии(рисует уголок)
+    if (start.x == stop.x && start.y != stop.y)//для оформления начала или конца линии(рисует уголок)
     {
         int pointY=start.y;
         do
@@ -104,7 +107,10 @@ void GraphicsCore::drawSimpleLine(point start, point stop, bool flagColoredStart
         while (pointY!=stop.y);
         drawOneSymb(point{start.x,pointY}, '\xB3', FColor, BColor);
     }
-    if (start.y == stop.y)
+    if (smallLine == 2) {
+        drawOneSymb(point{start.x,start.y}, '\xB3', FColor, BColor);
+    }
+    if (start.y == stop.y && start.x != stop.x)
     {
         int pointX=start.x;
         do
@@ -118,15 +124,19 @@ void GraphicsCore::drawSimpleLine(point start, point stop, bool flagColoredStart
         while (pointX!=stop.x);
         drawOneSymb(point{pointX,start.y}, '\xC4', FColor, BColor);
     }
+    if (smallLine == 1) {
+        drawOneSymb(point{start.x,start.y}, '\xC4', FColor, BColor);
+    }
 }
 
 void GraphicsCore::drawOneSymb(point pos, char symb, GraphicsCore_Color FColor, GraphicsCore_Color BColor)//рисует символ(позиция, код символва, цвет)
 {
+    if (pos.y>=HEIGHT_SCREEN || pos.x>=WIDTH_SCREEN || pos.y<0 || pos.x<0) return;
     BackBuffer[pos.y*WIDTH_SCREEN+pos.x].Char.UnicodeChar=symb;//вывод через буфер, координата символа(рсчет в одномерном массиве)
     BackBuffer[pos.y*WIDTH_SCREEN+pos.x].Attributes = FColor|(BColor<<4);//цвет
 }
 
-void GraphicsCore::drawSimpleRectangle(point lt, point rb, GraphicsCore_Color FColor, GraphicsCore_Color BColor)//рисует прямоуольнки по левой верхней и нижей правой координате
+void GraphicsCore::drawOrthogonalRectangle(point lt, point rb, GraphicsCore_Color FColor, GraphicsCore_Color BColor)//рисует прямоуольнки по левой верхней и нижей правой координате
 {
     point rt{rb.x, lt.y};
     point lb{lt.x, rb.y};
@@ -135,13 +145,13 @@ void GraphicsCore::drawSimpleRectangle(point lt, point rb, GraphicsCore_Color FC
     drawOneSymb(rt, '\xBF',FColor, BColor);
     drawOneSymb(rb, '\xD9',FColor, BColor);
 
-    drawSimpleLine(lt,rt,false,FColor, BColor);
-    drawSimpleLine(lt,lb,false,FColor, BColor);
-    drawSimpleLine(rb,rt,false,FColor, BColor);
-    drawSimpleLine(rb,lb,false,FColor, BColor);
+    drawOrthogonalLine(lt,rt,false,FColor, BColor);
+    drawOrthogonalLine(lt,lb,false,FColor, BColor);
+    drawOrthogonalLine(rb,rt,false,FColor, BColor);
+    drawOrthogonalLine(rb,lb,false,FColor, BColor);
 }
 
-void GraphicsCore::switchBuffer()//чета буфер
+void GraphicsCore::ShowBuffer()//чета буфер
 {
     SMALL_RECT writeArea= {0,0,WIDTH_SCREEN,HEIGHT_SCREEN};
     COORD charPosition= {0,0};
@@ -165,7 +175,6 @@ void GraphicsCore::drawCentreText(std::string text, point center, GraphicsCore_C
 
 void GraphicsCore::drawFill(point lt, point rb, GraphicsCore_Color BColor)//закрашивание заднего плана прямоугольника
 {
-
     for (int x=lt.x; x<=rb.x; x++)
     {
         for (int y=lt.y; y<=rb.y; y++)
@@ -173,7 +182,6 @@ void GraphicsCore::drawFill(point lt, point rb, GraphicsCore_Color BColor)//закр
             drawOneSymb(point{x,y}, ' ', GraphicsCore_Color(Color_Black), BColor);
         }
     }
-
 }
 
 void GraphicsCore::clearBuffer(){
