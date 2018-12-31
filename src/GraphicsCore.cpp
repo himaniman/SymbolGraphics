@@ -7,6 +7,14 @@ GraphicsCore::GraphicsCore()
 
 void GraphicsCore::init_graphics()
 {
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    WIDTH_SCREEN = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    HEIGHT_SCREEN = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
+    BackBuffer = new CHAR_INFO[WIDTH_SCREEN * HEIGHT_SCREEN];
+
     WORD attrib = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
     for(int x=0; x<WIDTH_SCREEN*HEIGHT_SCREEN; x++)
     {
@@ -14,12 +22,59 @@ void GraphicsCore::init_graphics()
         GraphicsCore::BackBuffer[x].Attributes = attrib;
     }
 
+    GraphicsCore::hConsole = CreateFile("CONOUT$", GENERIC_WRITE | GENERIC_READ,
+                          FILE_SHARE_READ | FILE_SHARE_WRITE,
+                          0L, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0L);
+}
+
+void GraphicsCore::init_graphics(int width, int height){
+
+    _COORD coord;
+    _SMALL_RECT Rect;
+
+    coord.X = 2;
+    coord.Y = 2;
+
+    Rect.Top = 0;
+    Rect.Left = 0;
+    Rect.Bottom = 2 - 1;
+    Rect.Right = 2 - 1;
+
+    GraphicsCore::hConsole = GetStdHandle(STD_OUTPUT_HANDLE);      // Get Handle
+    SetConsoleScreenBufferSize(GraphicsCore::hConsole, coord);            // Set Buffer Size
+    SetConsoleWindowInfo(GraphicsCore::hConsole, TRUE, &Rect);            // Set Window Size
+
+    coord.X = width;
+    coord.Y = height;
+
+    Rect.Top = 0;
+    Rect.Left = 0;
+    Rect.Bottom = height - 1;
+    Rect.Right = width - 1;
+
+    GraphicsCore::hConsole = GetStdHandle(STD_OUTPUT_HANDLE);      // Get Handle
+    SetConsoleScreenBufferSize(GraphicsCore::hConsole, coord);            // Set Buffer Size
+    SetConsoleWindowInfo(GraphicsCore::hConsole, TRUE, &Rect);            // Set Window Size
+
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    int columns, rows;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    WIDTH_SCREEN = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    HEIGHT_SCREEN = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
+    BackBuffer = new CHAR_INFO[WIDTH_SCREEN * HEIGHT_SCREEN];
+
+    WORD attrib = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+    for(int x=0; x<WIDTH_SCREEN*HEIGHT_SCREEN; x++)
+    {
+        GraphicsCore::BackBuffer[x].Char.UnicodeChar=' ';
+        GraphicsCore::BackBuffer[x].Attributes = attrib;
+    }
 
     GraphicsCore::hConsole = CreateFile("CONOUT$", GENERIC_WRITE | GENERIC_READ,
                           FILE_SHARE_READ | FILE_SHARE_WRITE,
                           0L, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0L);
-
-
 }
 
 void GraphicsCore::drawSimpleLine(point start, point stop, bool flagColoredStart, WORD inputColor)//функция рисующая линию(начало,конец, флаг использоваия,цвет)

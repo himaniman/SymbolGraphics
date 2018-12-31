@@ -1,10 +1,18 @@
 # depslib dependency file v1.0
-1533383070 source:c:\gitclone\symbolgraphics\src\graphicscore.cpp
+1546235978 source:c:\gitclone\symbolgraphics\src\graphicscore.cpp
 	"GraphicsCore.h"
 
-1533532568 c:\gitclone\symbolgraphics\include\graphicscore.h
+1546234966 c:\gitclone\symbolgraphics\include\graphicscore.h
 	<windows.h>
 	<conio.h>
 	<math.h>
 	<iostream>
+
+1546236354 source:c:\gitclone\symbolgraphics\main.cpp
+	<iostream>
+	<GraphicsCore.h>
+	<vector>
+	<ctime>
+	<sstream>
+	<stdio.h>
 

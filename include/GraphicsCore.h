@@ -1,13 +1,12 @@
 #ifndef GRAPHICSCORE_H
 #define GRAPHICSCORE_H
 
+#define _WIN32_WINNT 0x0500
+
 #include <windows.h>     //for Windows console functions
 #include <conio.h>       //for kbhit(), getche()
 #include <math.h>        //for sin, cos
 #include <iostream>
-
-#define WIDTH_SCREEN 80
-#define HEIGHT_SCREEN 50
 
 struct point{
     int x;
@@ -19,6 +18,7 @@ class GraphicsCore
     public:
         GraphicsCore();
         void init_graphics();
+        void init_graphics(int WIDTH, int HEIGHT);
         void drawSimpleLine(point start, point stop, bool flagColoredStart, WORD inputColor);
         void drawOneSymb(point pos, char symb, WORD inputColor);
         void drawSimpleRectangle(point lt, point rb, WORD inputColor);
@@ -30,7 +30,10 @@ class GraphicsCore
 
     private:
         HANDLE hConsole;
-        CHAR_INFO BackBuffer[WIDTH_SCREEN * HEIGHT_SCREEN];
+        CHAR_INFO *BackBuffer;
+
+        unsigned int WIDTH_SCREEN;
+        unsigned int HEIGHT_SCREEN;
 };
 
 #endif // GRAPHICSCORE_H
