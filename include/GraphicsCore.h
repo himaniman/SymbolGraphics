@@ -1,11 +1,11 @@
 #ifndef GRAPHICSCORE_H
 #define GRAPHICSCORE_H
 
+/// Indicates that the current operating system is newer than Windows 2000
 #define _WIN32_WINNT 0x0500
 
 #include <windows.h>     //for Windows console functions
-#include <conio.h>       //for kbhit(), getche()
-#include <math.h>        //for sin, cos
+#include <math.h>        //for sin, cos, abs
 #include <iostream>
 
 struct point{

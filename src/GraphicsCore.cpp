@@ -15,12 +15,7 @@ void GraphicsCore::init_graphics()
 
     BackBuffer = new CHAR_INFO[WIDTH_SCREEN * HEIGHT_SCREEN];
 
-    WORD attrib = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
-    for(int x=0; x<WIDTH_SCREEN*HEIGHT_SCREEN; x++)
-    {
-        GraphicsCore::BackBuffer[x].Char.UnicodeChar=' ';
-        GraphicsCore::BackBuffer[x].Attributes = attrib;
-    }
+    GraphicsCore::clearBuffer();
 
     GraphicsCore::hConsole = CreateFile("CONOUT$", GENERIC_WRITE | GENERIC_READ,
                           FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -32,6 +27,8 @@ void GraphicsCore::init_graphics(int width, int height){
     _COORD coord;
     _SMALL_RECT Rect;
 
+    /// Initially, first a small 2x2 screen, then with the specified arguments.
+    ///     It is necessary to hide the scrolling bands.
     coord.X = 2;
     coord.Y = 2;
 
@@ -40,9 +37,9 @@ void GraphicsCore::init_graphics(int width, int height){
     Rect.Bottom = 2 - 1;
     Rect.Right = 2 - 1;
 
-    GraphicsCore::hConsole = GetStdHandle(STD_OUTPUT_HANDLE);      // Get Handle
-    SetConsoleScreenBufferSize(GraphicsCore::hConsole, coord);            // Set Buffer Size
-    SetConsoleWindowInfo(GraphicsCore::hConsole, TRUE, &Rect);            // Set Window Size
+    GraphicsCore::hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleScreenBufferSize(GraphicsCore::hConsole, coord);
+    SetConsoleWindowInfo(GraphicsCore::hConsole, TRUE, &Rect);
 
     coord.X = width;
     coord.Y = height;
@@ -52,9 +49,9 @@ void GraphicsCore::init_graphics(int width, int height){
     Rect.Bottom = height - 1;
     Rect.Right = width - 1;
 
-    GraphicsCore::hConsole = GetStdHandle(STD_OUTPUT_HANDLE);      // Get Handle
-    SetConsoleScreenBufferSize(GraphicsCore::hConsole, coord);            // Set Buffer Size
-    SetConsoleWindowInfo(GraphicsCore::hConsole, TRUE, &Rect);            // Set Window Size
+    GraphicsCore::hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleScreenBufferSize(GraphicsCore::hConsole, coord);
+    SetConsoleWindowInfo(GraphicsCore::hConsole, TRUE, &Rect);
 
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     int columns, rows;
@@ -65,12 +62,7 @@ void GraphicsCore::init_graphics(int width, int height){
 
     BackBuffer = new CHAR_INFO[WIDTH_SCREEN * HEIGHT_SCREEN];
 
-    WORD attrib = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
-    for(int x=0; x<WIDTH_SCREEN*HEIGHT_SCREEN; x++)
-    {
-        GraphicsCore::BackBuffer[x].Char.UnicodeChar=' ';
-        GraphicsCore::BackBuffer[x].Attributes = attrib;
-    }
+    GraphicsCore::clearBuffer();
 
     GraphicsCore::hConsole = CreateFile("CONOUT$", GENERIC_WRITE | GENERIC_READ,
                           FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -79,8 +71,8 @@ void GraphicsCore::init_graphics(int width, int height){
 
 void GraphicsCore::drawOrthogonalLine(point start, point stop, bool flagColoredStart, GraphicsCore_Color FColor, GraphicsCore_Color BColor)//функция рисующая линию(начало,конец, флаг использоваия,цвет)
 {
-    short smallLine=0; //1 - x small, 2 - y small
-    if (!flagColoredStart && (start.x == stop.x || start.y == stop.y))//закрашивает начало и коенц
+    short smallLine=0; //1 - delta x = 2; 2 - delta y = 2
+    if (!flagColoredStart && (start.x == stop.x || start.y == stop.y))
     {
         if (abs(start.x-stop.x) == 2) smallLine = 1;
         if (abs(start.y-stop.y) == 2) smallLine = 2;
@@ -93,7 +85,7 @@ void GraphicsCore::drawOrthogonalLine(point start, point stop, bool flagColoredS
         if (start.y != stop.y)
             stop.y+=(start.y-stop.y)/abs(start.y-stop.y);
     }
-    if (start.x == stop.x && start.y != stop.y)//для оформления начала или конца линии(рисует уголок)
+    if (start.x == stop.x && start.y != stop.y)
     {
         int pointY=start.y;
         do
@@ -129,14 +121,16 @@ void GraphicsCore::drawOrthogonalLine(point start, point stop, bool flagColoredS
     }
 }
 
-void GraphicsCore::drawOneSymb(point pos, char symb, GraphicsCore_Color FColor, GraphicsCore_Color BColor)//рисует символ(позиция, код символва, цвет)
+void GraphicsCore::drawOneSymb(point pos, char symb, GraphicsCore_Color FColor, GraphicsCore_Color BColor)
 {
     if (pos.y>=HEIGHT_SCREEN || pos.x>=WIDTH_SCREEN || pos.y<0 || pos.x<0) return;
-    BackBuffer[pos.y*WIDTH_SCREEN+pos.x].Char.UnicodeChar=symb;//вывод через буфер, координата символа(рсчет в одномерном массиве)
-    BackBuffer[pos.y*WIDTH_SCREEN+pos.x].Attributes = FColor|(BColor<<4);//цвет
+    BackBuffer[pos.y*WIDTH_SCREEN+pos.x].Char.UnicodeChar=symb;
+    /// The color is determined by the sum of FColor | (BColor << 4),
+    ///     since BColor is stored as the upper 4 bits in the color buffer.
+    BackBuffer[pos.y*WIDTH_SCREEN+pos.x].Attributes = FColor|(BColor<<4);
 }
 
-void GraphicsCore::drawOrthogonalRectangle(point lt, point rb, GraphicsCore_Color FColor, GraphicsCore_Color BColor)//рисует прямоуольнки по левой верхней и нижей правой координате
+void GraphicsCore::drawOrthogonalRectangle(point lt, point rb, GraphicsCore_Color FColor, GraphicsCore_Color BColor)
 {
     point rt{rb.x, lt.y};
     point lb{lt.x, rb.y};
@@ -151,7 +145,7 @@ void GraphicsCore::drawOrthogonalRectangle(point lt, point rb, GraphicsCore_Colo
     drawOrthogonalLine(rb,lb,false,FColor, BColor);
 }
 
-void GraphicsCore::ShowBuffer()//чета буфер
+void GraphicsCore::ShowBuffer()
 {
     SMALL_RECT writeArea= {0,0,WIDTH_SCREEN,HEIGHT_SCREEN};
     COORD charPosition= {0,0};
@@ -161,19 +155,19 @@ void GraphicsCore::ShowBuffer()//чета буфер
                        charPosition, &writeArea);
 }
 
-void GraphicsCore::drawCentreText(std::string text, point center, GraphicsCore_Color FColor, GraphicsCore_Color BColor)//текст,координата центра,цвет
+void GraphicsCore::drawCentreText(std::string text, point center, GraphicsCore_Color FColor, GraphicsCore_Color BColor)
 {
-    int lenght = text.length();//длина текста
-    int leftBord = center.x - lenght/2;//начало для вывода текста
+    int lenght = text.length();
+    int leftBord = center.x - lenght/2;
 
-    for (int i=0; i<lenght; i++)//вывод текста посимвольно
+    for (int i=0; i<lenght; i++)
     {
         if (i<=HEIGHT_SCREEN)
             drawOneSymb(point{leftBord+i,center.y}, text[i], FColor, BColor);
     }
 }
 
-void GraphicsCore::drawFill(point lt, point rb, GraphicsCore_Color BColor)//закрашивание заднего плана прямоугольника
+void GraphicsCore::drawFill(point lt, point rb, GraphicsCore_Color BColor)
 {
     for (int x=lt.x; x<=rb.x; x++)
     {
@@ -193,7 +187,7 @@ void GraphicsCore::clearBuffer(){
     }
 }
 
-void GraphicsCore::drawLeftText(std::string text, point left, GraphicsCore_Color FColor, GraphicsCore_Color BColor){//вывод текста слева?
+void GraphicsCore::drawLeftText(std::string text, point left, GraphicsCore_Color FColor, GraphicsCore_Color BColor){
     int lenght = text.length();
 
     for (int i=0; i<lenght; i++)

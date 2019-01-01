@@ -1,12 +1,6 @@
-#include <iostream>
 #include <GraphicsCore.h>
-
-#include <vector>
 #include <ctime>
-#include <sstream>
 #include <stdio.h>
-
-using namespace std;
 
 /// User-defined functions to display his pieces.
 /// Пользовательские функции для отображение своих фигур.
