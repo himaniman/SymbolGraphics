@@ -46,6 +46,8 @@ class GraphicsCore
         void drawLeftText(std::string text, point left, GraphicsCore_Color FColor, GraphicsCore_Color BColor);
         void drawFill(point lt, point rb, GraphicsCore_Color BColor);
         void clearBuffer();
+        int get_WIDTH_SCREEN();
+        int get_HEIGHT_SCREEN();
 
     private:
         HANDLE hConsole;

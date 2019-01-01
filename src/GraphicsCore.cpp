@@ -202,3 +202,10 @@ void GraphicsCore::drawLeftText(std::string text, point left, GraphicsCore_Color
             drawOneSymb(point{left.x+i,left.y}, text[i], FColor, BColor);
     }
 }
+
+int GraphicsCore::get_WIDTH_SCREEN(){
+    return WIDTH_SCREEN;
+}
+int GraphicsCore::get_HEIGHT_SCREEN(){
+    return HEIGHT_SCREEN;
+}
