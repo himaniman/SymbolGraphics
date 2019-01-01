@@ -1,5 +1,7 @@
 # Symbol Graphics class
-Class for works with WIN API output ASCII graphics
+Простой класс позволяющий легко выводить ascii графику в консоли Windows
+
+![image](https://lh4.googleusercontent.com/2rPySwCvqcTie78B0Kbrwi87EliT9zDNX9zS_eII-RmbDkcR9YnJy2QiK6p_Ie8oBAsGDNucqXAU-dYtKl5OnO3RzyaJzJxbEMKvA53rBxsST0vHMlE=w472)
 
 ## Описание
 Класс позволяет выводить в консоль Windows (cmd.exe) графические примитивы и текст с указанием цвета и координат. Можно устанавливать цвет символа и цвет фона для символа.
