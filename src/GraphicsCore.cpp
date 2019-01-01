@@ -2,7 +2,8 @@
 
 GraphicsCore::GraphicsCore()
 {
-    //ctor
+    WIDTH_SCREEN = 0;
+    HEIGHT_SCREEN = 0;
 }
 
 void GraphicsCore::init_graphics()
