@@ -1,7 +1,10 @@
 # Symbol Graphics class
 Простой класс позволяющий легко выводить ascii графику в консоли Windows
 
-![image](https://lh4.googleusercontent.com/2rPySwCvqcTie78B0Kbrwi87EliT9zDNX9zS_eII-RmbDkcR9YnJy2QiK6p_Ie8oBAsGDNucqXAU-dYtKl5OnO3RzyaJzJxbEMKvA53rBxsST0vHMlE=w472)
+![Alt text](/screenshots/example.png?raw=true "Optional Title")
+![Alt text](/screenshots/menu.png?raw=true "Optional Title")
+![Alt text](/screenshots/game.png?raw=true "Optional Title")
+![Alt text](/screenshots/textbox.png?raw=true "Optional Title")
 
 ## Описание
 Класс позволяет выводить в консоль Windows (cmd.exe) графические примитивы и текст с указанием цвета и координат. Можно устанавливать цвет символа и цвет фона для символа.
